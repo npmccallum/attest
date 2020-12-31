@@ -7,8 +7,8 @@
 
 use std::io::{Error, ErrorKind, Result};
 
-/// The type of attestation technology in use
-pub enum Technology {
+/// The attestation that was performed
+pub enum Attestation {
     /// No attestation was performed
     None,
 
@@ -32,7 +32,7 @@ pub enum Technology {
 /// The `output` parameter will contain the output data from the attestation.
 /// If the `output` parameter has a zero length, no output data will be written
 /// and the return value will hint at the required length for the output buffer.
-pub fn attest(input: &[u8], output: &mut [u8]) -> Result<Technology> {
+pub fn attest(input: &[u8], output: &mut [u8]) -> Result<Attestation> {
     let rax: isize;
     let rdx: usize;
 
@@ -61,9 +61,9 @@ pub fn attest(input: &[u8], output: &mut [u8]) -> Result<Technology> {
     }
 
     Ok(match rdx {
-        0 => Technology::None,
-        1 => Technology::Sev(rax as _),
-        2 => Technology::Sgx(rax as _),
+        0 => Attestation::None,
+        1 => Attestation::Sev(rax as _),
+        2 => Attestation::Sgx(rax as _),
         _ => return Err(ErrorKind::Other.into()),
     })
 }
